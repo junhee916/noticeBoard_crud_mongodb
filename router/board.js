@@ -2,6 +2,15 @@ const express = require('express')
 const router = express.Router()
 const boardModel = require('../model/board')
 const multer = require('multer')
+const checkAuth = require('../middleware/check_auth')
+const {
+    boards_delete_all,
+    boards_delete_board,
+    boards_get_all,
+    boards_get_board,
+    boards_register,
+    boards_update
+} = require('../controller/board')
 
 const storage = multer.diskStorage({
 
@@ -31,169 +40,21 @@ const upload = multer({
     fileFilter : fileFilter
 })
 // total get board 
-router.get('/', async (req, res) => {
-    
-    try{
-        const boards = await boardModel.find()
-        .populate('user', ['email'])
-
-        res.status(200).json({
-            msg : "get boards",
-            count : boards.length,
-            boardInfo : boards.map(board => {
-                return {
-                    id : board._id,
-                    user : board.user,
-                    board : board.board,
-                    boardImage : board.boardImage
-                }
-            })
-        })
-    }
-    catch(err){
-        res.status(500).json({
-            msg : err.message
-        })
-    }
-})
+router.get('/', boards_get_all)
 
 // detail get board
-router.get('/:boardId', async (req, res) => {
-
-    const id = req.params.boardId
-
-    try{
-        const board = await boardModel.findById(id)
-        .populate('user', ['email'])
-
-        if(!board){
-            return res.status(402).json({
-                msg : "not boardId"
-            })
-        }
-        else {
-            res.status(200).json({
-                msg : "get board",
-                boardInfo : {
-                    id : board._id,
-                    user : board.user,
-                    board : board.board,
-                    boardImage : board.boardImage
-                }
-            })
-        }
-    }
-    catch(err){
-        res.status(500).json({
-            msg : err.message
-        })
-    }
-})
+router.get('/:boardId', checkAuth, boards_get_board)
 
 // register board 
-router.post('/', upload.single('boardImage'), async (req, res) => {
-    
-    const { user, board } = req.body
-
-    const newBoard = new boardModel({
-        user,
-        board,
-        boardImage : req.file.path
-    })
-
-    try{
-        const board = await newBoard.save()
-
-        res.status(200).json({
-            msg : "register board",
-            boardInfo : {
-                id : board._id,
-                user : board.user,
-                board : board.board,
-                boardImage : board.boardImage
-            }
-        })
-    }
-    catch(err){
-        res.status(500).json({
-            msg : err.message
-        })
-    }
-})
+router.post('/', checkAuth, upload.single('boardImage'), boards_register)
 
 // update board
-router.put('/:boardId', async (req, res) => {
-
-    const id = req.params.boardId
-
-    const updateOps = {}
-
-    for(const ops of req.body){
-        updateOps[ops.propName] = ops.value
-    }
-
-    try{
-        const board = await boardModel.findByIdAndUpdate(id, {$set : updateOps})
-
-        if(!board){
-            return res.status(402).json({
-                msg : "not boardId"
-            })
-        }
-        else{
-            res.status(200).json({
-                msg : "update board by id: ", id
-            })
-        }
-    }
-    catch(err){
-        res.status(500).json({
-            msg : err.message
-        })
-    }
-})
+router.put('/:boardId', checkAuth, boards_update)
  
 // total delete board 
-router.delete('/', async (req, res) => {
-
-    try{
-        await boardModel.remove()
-
-        res.status(200).json({
-            msg : "delete boards"
-        })
-    }
-    catch(err){
-        res.status(500).json({
-            msg : err.message
-        })
-    }
-})
+router.delete('/', boards_delete_all)
 
 // detail delete board 
-router.delete('/:boardId', async (req, res) => {
-
-    const id = req.params.boardId
-
-    try{
-        const board = await boardModel.findByIdAndRemove(id)
-
-        if(!board){
-            return res.status(402).json({
-                msg : "not boardId"
-            })
-        }
-        else{
-            res.status(200).json({
-                msg : "delete board by id: ", id
-            })
-        }
-    }
-    catch(err){
-        res.status(500).json({
-            msg : err.message
-        })
-    }
-})
+router.delete('/:boardId', checkAuth, boards_delete_board)
 
 module.exports = router
