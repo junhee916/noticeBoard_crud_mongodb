@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const boardModel = require('../model/board')
 const multer = require('multer')
 const checkAuth = require('../middleware/check_auth')
 const {
@@ -49,7 +48,7 @@ router.get('/:boardId', checkAuth, boards_get_board)
 router.post('/', checkAuth, upload.single('boardImage'), boards_register)
 
 // update board
-router.put('/:boardId', checkAuth, boards_update)
+router.patch('/:boardId', checkAuth, boards_update)
  
 // total delete board 
 router.delete('/', boards_delete_all)

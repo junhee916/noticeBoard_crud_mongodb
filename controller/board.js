@@ -1,3 +1,5 @@
+const boardModel = require('../model/board')
+
 exports.boards_get_all = async (req, res) => {
     
     try{
@@ -106,7 +108,7 @@ exports.boards_update = async (req, res) => {
         }
         else{
             res.status(200).json({
-                msg : "update board by id: ", id
+                msg : "update board by id: " + id
             })
         }
     }

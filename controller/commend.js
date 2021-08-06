@@ -44,7 +44,7 @@ exports.commend_register = async (req, res) => {
     })
 
     try{
-        await newCommend.save()
+        const commend = await newCommend.save()
 
         res.status(200).json({
             msg : "register commend",
@@ -83,7 +83,7 @@ exports.commend_update = async (req, res) => {
         }
         else{
             res.status(200).json({
-                msg : "update commend by id: ", id
+                msg : "update commend by id: " + id
             })
         }
     }

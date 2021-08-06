@@ -160,7 +160,7 @@ exports.users_update = async (req, res) => {
         }
         else{
             res.status(200).json({
-                msg : "update user by id: ", id
+                msg : "update user by id: " + id
             })
         }
     }

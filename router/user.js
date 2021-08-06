@@ -24,7 +24,7 @@ router.post('/signup', users_signup)
 router.post('/login', users_login)
 
 // update user
-router.put('/:userId', checkAuth, users_update)
+router.patch('/:userId', checkAuth, users_update)
 
 // total delete user
 router.delete('/', users_delete_all)

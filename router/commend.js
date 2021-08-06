@@ -14,7 +14,7 @@ router.get('/:commendId', commend_get)
 router.post('/', commend_register)
 
 // update commend 
-router.put('/:commendId', commend_update)
+router.patch('/:commendId', commend_update)
 
 // detail delete commend
 router.delete('/:commendId', commend_delete)
